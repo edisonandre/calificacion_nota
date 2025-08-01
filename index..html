@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Verificador de Notas para Estudiantes</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: url('colegio.jpg') center center/cover no-repeat fixed, #f2f4f8;
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+        }
+        .container {
+            max-width: 420px;
+            margin: 40px auto;
+            background: rgba(255,255,255,0.95);
+            border-radius: 14px;
+            box-shadow: 0 5px 24px rgba(0,0,0,0.12);
+            padding: 28px 18px 18px 18px;
+            animation: fadeIn 1.2s;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(40px);}
+            to { opacity: 1; transform: none;}
+        }
+        h2 {
+            margin-top: 0;
+            font-size: 1.3em;
+            text-align: center;
+        }
+        .input-group {
+            margin-bottom: 18px;
+            opacity: 0;
+            transform: translateY(30px);
+            animation: fieldIn 0.7s forwards;
+        }
+        .input-group.animated {
+            opacity: 1;
+            transform: none;
+        }
+        @keyframes fieldIn {
+            to {
+                opacity: 1;
+                transform: none;
+            }
+        }
+        label {
+            display: block;
+            margin-bottom: 6px;
+            font-weight: 500;
+        }
+        select, input[type="number"] {
+            width: 100%;
+            padding: 8px;
+            border-radius: 5px;
+            border: 1px solid #bbb;
+            font-size: 1em;
+            margin-bottom: 4px;
+            background: #f8fafe;
+            transition: box-shadow 0.3s, background 0.4s;
+        }
+        select:focus, input[type="number"]:focus {
+            box-shadow: 0 0 0 2px #2563eb44;
+            background: #eaf3fc;
+            outline: none;
+        }
+        .color-bajo {
+            background: #ffeded !important;
+            color: #e74c3c !important;
+            border: 1px solid #e74c3c !important;
+            font-weight: bold;
+            transition: background 0.3s, color 0.3s;
+        }
+        .color-basico {
+            background: #fff5e5 !important;
+            color: #ff9800 !important;
+            border: 1px solid #ff9800 !important;
+            font-weight: bold;
+            transition: background 0.3s, color 0.3s;
+        }
+        .color-alto {
+            background: #e4fbe6 !important;
+            color: #21a145 !important;
+            border: 1px solid #21a145 !important;
+            font-weight: bold;
+            transition: background 0.3s, color 0.3s;
+        }
+        .color-superior {
+            background: #e5f0ff !important;
+            color: #2475b3 !important;
+            border: 1px solid #2475b3 !important;
+            font-weight: bold;
+            transition: background 0.3s, color 0.3s;
+        }
+        .note-status {
+            font-weight: bold;
+            margin-bottom: 6px;
+            padding: 3px 8px;
+            border-radius: 6px;
+            display: inline-block;
+            animation: popIn 0.6s;
+        }
+        @keyframes popIn {
+            0% { transform: scale(0.7); opacity: 0; }
+            80% { transform: scale(1.07);}
+            100% { transform: scale(1); opacity: 1;}
+        }
+        button {
+            padding: 12px 20px;
+            background: #2563eb;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 1.1em;
+            cursor: pointer;
+            width: 100%;
+            margin-top: 8px;
+            box-shadow: 0 2px 6px #2563eb1a;
+            transition: background 0.2s, transform 0.2s;
+        }
+        button:active {
+            background: #143985;
+            transform: scale(0.97);
+        }
+        button:hover, button:focus {
+            background: #1743a6;
+        }
+        .results {
+            margin-top: 16px;
+            background: #eaf3fc;
+            border-radius: 10px;
+            padding: 14px 10px;
+            animation: fadeInResult 0.85s;
+        }
+        @keyframes fadeInResult {
+            from { opacity: 0; transform: scale(0.95);}
+            to { opacity: 1; transform: none;}
+        }
+        .aprobado {
+            color: #2fb259;
+            font-weight: bold;
+            text-align: center;
+            margin-top: 12px;
+            animation: bounce 0.9s;
+        }
+        .reprobado {
+            color: #e74c3c;
+            font-weight: bold;
+            text-align: center;
+            margin-top: 12px;
+            animation: bounce 0.9s;
+        }
+        @keyframes bounce {
+            0% { transform: scale(0.9);}
+            40% { transform: scale(1.13);}
+            70% { transform: scale(0.97);}
+            100% { transform: scale(1);}
+        }
+        .sugerencia {
+            text-align: center;
+            color: #2563eb;
+            font-size: 1.02em;
+            font-weight: 600;
+            margin: 10px 0 12px 0;
+            opacity: 0;
+            transition: opacity 0.4s;
+        }
+        .sugerencia.visible {
+            opacity: 1;
+        }
+        #descargarBlog {
+            display: none;
+            margin: 0 auto 10px auto;
+            background: #00b894;
+            font-size: 1em;
+            padding: 10px 0;
+            width: 90%;
+            box-shadow: 0 2px 6px #00b89422;
+        }
+        #descargarBlog:active {
+            background: #008e6b;
+        }
+        @media (max-width: 600px) {
+            .container {
+                max-width: 97vw;
+                padding: 15px 5px 10px 5px;
+            }
+            h2 {
+                font-size: 1.07em;
+            }
+            button {
+                font-size: 1em;
+                padding: 12px 5px;
+            }
+            .results {
+                padding: 10px 3px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>¿Alcanzas para pasar la asignatura?</h2>
+        <div class="input-group animated">
+            <label for="numNotas">¿Cuántas notas vas a ingresar?</label>
+            <input type="number" id="numNotas" min="1" max="10" value="4">
+        </div>
+        <button onclick="generarCampos()" id="btn-generar">Ingresar Notas</button>
+        <div class="sugerencia" id="sugerencia"></div>
+        <form id="notasForm" style="margin-top: 20px; display: none;">
+            <div id="camposNotas"></div>
+            <button type="submit" id="btn-verificar">Verificar</button>
+        </form>
+        <div class="results" id="resultados" style="display: none;"></div>
+        <button type="button" id="descargarBlog" style="display:none;">Descargar blog de nota</button>
+        <div style="margin-top:16px; font-size:0.97em; color:#888; text-align:center;">
+            <strong>Clasificación:</strong><br>
+            <span class="note-status color-bajo">Bajo</span>
+            <span class="note-status color-basico">Básico</span>
+            <span class="note-status color-alto">Alto</span>
+            <span class="note-status color-superior">Superior</span>
+        </div>
+    </div>
+    <script>
+        // Equivalencias para cada opción
+        const equivalencias = {
+            "bajo": 30,
+            "basico": 60,
+            "alto": 70,
+            "superior": 100
+        };
+        // Generar campos de notas dinámicamente
+        function generarCampos() {
+            const numNotas = parseInt(document.getElementById('numNotas').value, 10);
+            const campos = document.getElementById('camposNotas');
+            campos.innerHTML = '';
+            for (let i = 0; i < numNotas; i++) {
+                campos.innerHTML += `
+                    <div class="input-group" style="animation-delay:${i*0.11}s">
+                        <label for="nota${i}">Nota ${i+1}:</label>
+                        <select id="nota${i}" name="nota${i}" onchange="colorearOpcion(this); sugerenciaInteractiva(false);">
+                            <option value="">Selecciona una opción</option>
+                            <option value="bajo" class="color-bajo">Bajo </option>
+                            <option value="basico" class="color-basico">Básico</option>
+                            <option value="alto" class="color-alto">Alto</option>
+                            <option value="superior" class="color-superior">Superior</option>
+                        </select>
+                    </div>
+                `;
+            }
+            document.getElementById('notasForm').style.display = 'block';
+            document.getElementById('resultados').style.display = 'none';
+            document.getElementById('descargarBlog').style.display = 'none';
+            setTimeout(() => {
+                for(let i=0;i<numNotas;i++){
+                    let grupo = document.querySelectorAll('.input-group')[i+1];
+                    if(grupo) grupo.classList.add('animated');
+                    colorearOpcion(document.getElementById(`nota${i}`));
+                }
+            }, 100);
+        }
+
+        function colorearOpcion(select) {
+            select.classList.remove("color-bajo", "color-basico", "color-alto", "color-superior");
+            if(select.value){
+                select.classList.add("color-" + select.value);
+            }
+        }
+
+        function clasificarNota(num) {
+            if (num >= 0 && num <= 59) return {nombre:"Bajo", clase:"color-bajo"};
+            if (num >= 60 && num <= 61) return {nombre:"Básico", clase:"color-basico"};
+            if (num >= 62 && num <= 89) return {nombre:"Alto", clase:"color-alto"};
+            if (num >= 90 && num <= 100) return {nombre:"Superior", clase:"color-superior"};
+            return {nombre:"Inválida", clase:""};
+        }
+
+        // Sugerencia si faltan campos
+        function sugerenciaInteractiva(forceShow) {
+            const numNotas = parseInt(document.getElementById('numNotas').value, 10);
+            let faltantes = 0;
+            for (let i = 0; i < numNotas; i++) {
+                if(document.getElementById(`nota${i}`) && document.getElementById(`nota${i}`).value === "") {
+                    faltantes++;
+                }
+            }
+            const sug = document.getElementById('sugerencia');
+            if (faltantes > 0 || forceShow) {
+                sug.innerText = "¡Recuerda seleccionar una opción para cada nota!";
+                sug.classList.add("visible");
+            } else {
+                sug.classList.remove("visible");
+            }
+        }
+
+        // Efecto interactivo en los botones
+        document.getElementById('btn-generar').addEventListener('mousedown', function(){
+            this.style.transform = "scale(0.96)";
+        });
+        document.getElementById('btn-generar').addEventListener('mouseup', function(){
+            this.style.transform = "";
+        });
+        document.getElementById('btn-verificar').addEventListener('mousedown', function(){
+            this.style.transform = "scale(0.96)";
+        });
+        document.getElementById('btn-verificar').addEventListener('mouseup', function(){
+            this.style.transform = "";
+        });
+
+        // Función para generar y descargar el blog de nota
+        function generarYDescargarBlog(notas, promedio, clasificacionPromedio, resultadoFinal) {
+            let contenido = "**** Blog de nota ****\n\n";
+            notas.forEach((nota, idx) => {
+                contenido += `Nota ${idx + 1}: ${nota.texto} (${nota.valor})\n`;
+            });
+            contenido += `\nPromedio: ${promedio.toFixed(1)} (${clasificacionPromedio})\n`;
+            contenido += `Resultado: ${resultadoFinal}\n`;
+            contenido += "\n-----------------------------\n";
+            contenido += "Generado por el verificador de notas.";
+            
+            // Crear blob y disparar la descarga
+            const blob = new Blob([contenido], {type: "text/plain"});
+            const link = document.createElement("a");
+            link.href = URL.createObjectURL(blob);
+            link.download = "blog_de_nota.txt";
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+
+        // Mostrar el botón y preparar datos para descargar
+        function prepararDescargaBlog(notas, promedio, clasificacionPromedio, resultadoFinal) {
+            const btnDescargar = document.getElementById('descargarBlog');
+            btnDescargar.style.display = 'block';
+            btnDescargar.onclick = function() {
+                generarYDescargarBlog(notas, promedio, clasificacionPromedio, resultadoFinal);
+            };
+        }
+
+        document.getElementById('notasForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const numNotas = parseInt(document.getElementById('numNotas').value, 10);
+            let sum = 0;
+            let detalles = '';
+            let todasValidas = true;
+            let notasParaBlog = [];
+            for (let i = 0; i < numNotas; i++) {
+                const select = document.getElementById(`nota${i}`);
+                let valorNum = null;
+                let clasificacion = {};
+
+                if (select.value !== "") {
+                    valorNum = equivalencias[select.value];
+                    clasificacion = clasificarNota(valorNum);
+                    notasParaBlog.push({texto: clasificacion.nombre, valor: valorNum});
+                } else {
+                    todasValidas = false;
+                    detalles += `<div class="note-status color-bajo">Nota ${i+1}: No seleccionaste opción.</div>`;
+                    continue;
+                }
+
+                sum += valorNum;
+                detalles += `<div class="note-status ${clasificacion.clase}">Nota ${i+1}: <strong>${clasificacion.nombre}</strong> (${valorNum})</div>`;
+            }
+            let promedio = sum / numNotas;
+            let clasifPromedio = clasificarNota(promedio);
+            let mensaje = '';
+            let resultadoFinalTexto = '';
+            if (todasValidas) {
+                resultadoFinalTexto = promedio >= 60 ? "Aprobado" : "Reprobado";
+                mensaje = promedio >= 60
+                    ? `<div class="aprobado">¡Felicidades! Apruebas la asignatura con promedio ${promedio.toFixed(1)} (<span class="note-status ${clasifPromedio.clase}">${clasifPromedio.nombre}</span>)</div>`
+                    : `<div class="reprobado">No alcanzas para aprobar. Tu promedio es ${promedio.toFixed(1)} (<span class="note-status ${clasifPromedio.clase}">${clasifPromedio.nombre}</span>)</div>`;
+                prepararDescargaBlog(notasParaBlog, promedio, clasifPromedio.nombre, resultadoFinalTexto);
+            } else {
+                mensaje = "<div class='reprobado'>Por favor, corrige las notas inválidas.</div>";
+                document.getElementById('descargarBlog').style.display = 'none';
+                sugerenciaInteractiva(true);
+            }
+            document.getElementById('resultados').innerHTML = detalles + mensaje;
+            document.getElementById('resultados').style.display = 'block';
+        });
+    </script>
+</body>
+</html>
