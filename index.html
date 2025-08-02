@@ -317,8 +317,8 @@
 
         function clasificarNota(num) {
             if (num >= 0 && num <= 59) return {nombre:"Bajo", clase:"color-bajo"};
-            if (num >= 60 && num <= 61) return {nombre:"Básico", clase:"color-basico"};
-            if (num >= 62 && num <= 89) return {nombre:"Alto", clase:"color-alto"};
+            if (num >= 60 && num <= 69) return {nombre:"Básico", clase:"color-basico"};
+            if (num >= 70 && num <= 89) return {nombre:"Alto", clase:"color-alto"};
             if (num >= 90 && num <= 100) return {nombre:"Superior", clase:"color-superior"};
             return {nombre:"Inválida", clase:""};
         }
