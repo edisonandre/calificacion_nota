@@ -53,7 +53,7 @@
         }
         select, input[type="number"] {
             width: 100%;
-            padding: 8px;
+            padding: 8px 6px;
             border-radius: 5px;
             border: 1px solid #bbb;
             font-size: 1em;
@@ -172,7 +172,7 @@
         }
         #descargarBlog {
             display: none;
-            margin: 0 auto 10px auto;
+            margin: 26px auto 0 auto;
             background: #00b894;
             font-size: 1em;
             padding: 10px 0;
@@ -182,10 +182,41 @@
         #descargarBlog:active {
             background: #008e6b;
         }
+        /* Corazón y contador estilos */
+        .corazon-container {
+            text-align: center;
+            margin-top: 12px;
+            margin-bottom: 8px;
+            display: none;
+        }
+        .corazon-btn {
+            font-size: 1.5em;
+            color: #e25555;
+            cursor: pointer;
+            border: none;
+            background: transparent;
+            outline: none;
+            transition: transform 0.15s;
+            vertical-align: middle;
+        }
+        .corazon-btn:active {
+            transform: scale(1.18);
+        }
+        .corazon-count {
+            font-size: 1em;
+            color: #333;
+            margin-left: 7px;
+            vertical-align: middle;
+            font-weight: 600;
+        }
+        .corazon-btn.given {
+            filter: drop-shadow(0 0 6px #e2555577);
+            opacity: 0.8;
+        }
         @media (max-width: 600px) {
             .container {
-                max-width: 97vw;
-                padding: 15px 5px 10px 5px;
+                max-width: 99vw;
+                padding: 9vw 2vw 2vw 2vw;
             }
             h2 {
                 font-size: 1.07em;
@@ -193,9 +224,18 @@
             button {
                 font-size: 1em;
                 padding: 12px 5px;
+                margin-top: 5vw;
             }
             .results {
                 padding: 10px 3px;
+            }
+            #descargarBlog {
+                margin-top: 7vw;
+                width: 98vw;
+                font-size: 1em;
+            }
+            .corazon-container {
+                margin-top: 6vw;
             }
         }
     </style>
@@ -215,6 +255,11 @@
         </form>
         <div class="results" id="resultados" style="display: none;"></div>
         <button type="button" id="descargarBlog" style="display:none;">Descargar blog de nota</button>
+        <!-- Corazón y contador (oculto inicialmente) -->
+        <div class="corazon-container" id="corazonContainer">
+            <button id="corazon" class="corazon-btn" title="¡Dale corazón si te gustó!">❤️</button>
+            <span id="contadorCorazon" class="corazon-count">0</span>
+        </div>
         <div style="margin-top:16px; font-size:0.97em; color:#888; text-align:center;">
             <strong>Clasificación:</strong><br>
             <span class="note-status color-bajo">Bajo</span>
@@ -253,6 +298,7 @@
             document.getElementById('notasForm').style.display = 'block';
             document.getElementById('resultados').style.display = 'none';
             document.getElementById('descargarBlog').style.display = 'none';
+            document.getElementById('corazonContainer').style.display = 'none';
             setTimeout(() => {
                 for(let i=0;i<numNotas;i++){
                     let grupo = document.querySelectorAll('.input-group')[i+1];
@@ -337,6 +383,8 @@
             btnDescargar.onclick = function() {
                 generarYDescargarBlog(notas, promedio, clasificacionPromedio, resultadoFinal);
             };
+            // Mostrar el corazón solo después de sacar el promedio
+            document.getElementById('corazonContainer').style.display = 'block';
         }
 
         document.getElementById('notasForm').addEventListener('submit', function(e) {
@@ -377,11 +425,47 @@
             } else {
                 mensaje = "<div class='reprobado'>Por favor, corrige las notas inválidas.</div>";
                 document.getElementById('descargarBlog').style.display = 'none';
+                document.getElementById('corazonContainer').style.display = 'none';
                 sugerenciaInteractiva(true);
             }
             document.getElementById('resultados').innerHTML = detalles + mensaje;
             document.getElementById('resultados').style.display = 'block';
         });
+
+        // --- Corazón y contador ---
+        // Clave para localStorage del contador global
+        const CORAZON_KEY = 'contadorCorazonGlobal';
+        const CORAZON_GIVEN_KEY = 'corazonYaDado';
+
+        // Inicializar contador y estado del corazón
+        function actualizarCorazon() {
+            const conteo = parseInt(localStorage.getItem(CORAZON_KEY) || '0', 10);
+            document.getElementById('contadorCorazon').textContent = conteo;
+            const dado = localStorage.getItem(CORAZON_GIVEN_KEY) === 'true';
+            const btn = document.getElementById('corazon');
+            if (dado) {
+                btn.classList.add('given');
+                btn.disabled = true;
+                btn.title = "¡Ya diste tu corazón, gracias!";
+            } else {
+                btn.classList.remove('given');
+                btn.disabled = false;
+                btn.title = "¡Dale corazón si te gustó!";
+            }
+        }
+
+        // Evento al dar corazón
+        document.getElementById('corazon').addEventListener('click', function() {
+            if (localStorage.getItem(CORAZON_GIVEN_KEY) === 'true') return;
+            let conteo = parseInt(localStorage.getItem(CORAZON_KEY) || '0', 10);
+            conteo++;
+            localStorage.setItem(CORAZON_KEY, conteo);
+            localStorage.setItem(CORAZON_GIVEN_KEY, 'true');
+            actualizarCorazon();
+        });
+
+        // Inicializa al cargar
+        actualizarCorazon();
     </script>
 </body>
 </html>
